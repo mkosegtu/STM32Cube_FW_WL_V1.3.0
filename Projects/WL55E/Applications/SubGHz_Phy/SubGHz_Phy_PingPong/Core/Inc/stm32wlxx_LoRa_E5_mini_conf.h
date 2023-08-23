@@ -1,13 +1,13 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    stm32wlxx_nucleo_conf.h
+  * @file    stm32wlxx_LoRa_E5_mini_conf.h
   * @author  MCD Application Team
-  * @brief   STM32WLxx_Nucleo board configuration file.
+  * @brief   STM32WLxx_LoRa_E5_mini board configuration file.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2021 STMicroelectronics.
+  * Copyright (c) 2020(-2021) STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -19,8 +19,8 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef STM32WLXX_NUCLEO_CONF_H
-#define STM32WLXX_NUCLEO_CONF_H
+#ifndef STM32WLXX_LORA_E5_MINI_CONF_H
+#define STM32WLXX_LORA_E5_MINI_CONF_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -43,15 +43,15 @@
   * @{
   */
 
-/** @addtogroup STM32WLXX_NUCLEO
+/** @addtogroup STM32WLXX_LoRa_E5_mini
   * @{
   */
 
-/** @defgroup STM32WLXX_NUCLEO_CONFIG CONFIG
+/** @defgroup STM32WLXX_LoRa_E5_mini_CONFIG CONFIG
   * @{
   */
 
-/** @defgroup STM32WLXX_NUCLEO_CONFIG_Exported_Constants Exported Constants
+/** @defgroup STM32WLXX_LoRa_E5_mini_CONFIG_Exported_Constants Exported Constants
   * @{
   */
 /* COM usage define */
@@ -61,7 +61,7 @@
 #define USE_COM_LOG                         0U
 
 /* IRQ priorities */
-#define BSP_BUTTON_USER_IT_PRIORITY         14U
+#define BSP_BUTTON_SWx_IT_PRIORITY         15U
 
 /**
   * @}
@@ -103,3 +103,5 @@
 #endif
 
 #endif /* STM32WLXX_NUCLEO_CONF_H */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

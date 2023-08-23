@@ -1,25 +1,24 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    usart.h
+  * @file    adc.h
   * @brief   This file contains all the function prototypes for
-  *          the usart.c file
+  *          the adc.c file
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                             www.st.com/SLA0044
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USART_H__
-#define __USART_H__
+#ifndef __ADC_H__
+#define __ADC_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,13 +31,13 @@ extern "C" {
 
 /* USER CODE END Includes */
 
-extern UART_HandleTypeDef huart1;
+extern ADC_HandleTypeDef hadc;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_USART1_UART_Init(void);
+void MX_ADC_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -48,5 +47,6 @@ void MX_USART1_UART_Init(void);
 }
 #endif
 
-#endif /* __USART_H__ */
+#endif /* __ADC_H__ */
 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

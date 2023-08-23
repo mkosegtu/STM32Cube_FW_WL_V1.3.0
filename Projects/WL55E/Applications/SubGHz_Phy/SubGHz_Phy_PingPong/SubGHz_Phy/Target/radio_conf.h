@@ -93,6 +93,18 @@ extern "C" {
 
 /* USER CODE BEGIN EC */
 /**
+  * @brief disable the Sigfox radio modulation
+  * @note enabled by default
+  */
+#define RADIO_SIGFOX_ENABLE 0
+
+/**
+  * @brief disable the radio generic features
+  * @note enabled by default
+  */
+#define RADIO_GENERIC_CONFIG_ENABLE 0
+
+/**
   * @brief Set RX pin to high or low level
   */
 #define DBG_GPIO_RADIO_RX(set_rst) PROBE_GPIO_##set_rst##_LINE(PROBE_LINE1_PORT, PROBE_LINE1_PIN);

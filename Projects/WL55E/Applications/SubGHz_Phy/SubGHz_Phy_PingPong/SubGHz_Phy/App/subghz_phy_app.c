@@ -157,6 +157,9 @@ void SubghzApp_Init(void)
 {
   /* USER CODE BEGIN SubghzApp_Init_1 */
 
+  BSP_LED_Init(LED_RED);
+  BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
+
   APP_LOG(TS_OFF, VLEVEL_M, "\n\rPING PONG\n\r");
   /* Get SubGHY_Phy APP version*/
   APP_LOG(TS_OFF, VLEVEL_M, "APPLICATION_VERSION: V%X.%X.%X\r\n",
@@ -350,10 +353,7 @@ static void PingPong_Process(void)
           if (strncmp((const char *)BufferRx, PONG, sizeof(PONG) - 1) == 0)
           {
             UTIL_TIMER_Stop(&timerLed);
-            /* switch off green led */
-            HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET); /* LED_GREEN */
-            /* master toggles red led */
-            HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin); /* LED_RED */
+            BSP_LED_Toggle(LED_RED) ;
             /* Add delay between RX and TX */
             HAL_Delay(Radio.GetWakeupTime() + RX_TIME_MARGIN);
             /* master sends PING*/
@@ -387,10 +387,8 @@ static void PingPong_Process(void)
           if (strncmp((const char *)BufferRx, PING, sizeof(PING) - 1) == 0)
           {
             UTIL_TIMER_Stop(&timerLed);
-            /* switch off red led */
-            HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET); /* LED_RED */
             /* slave toggles green led */
-            HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin); /* LED_GREEN */
+            BSP_LED_Toggle(LED_RED) ;
             /* Add delay between RX and TX */
             HAL_Delay(Radio.GetWakeupTime() + RX_TIME_MARGIN);
             /*slave sends PONG*/
@@ -445,8 +443,7 @@ static void PingPong_Process(void)
 
 static void OnledEvent(void *context)
 {
-  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin); /* LED_GREEN */
-  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin); /* LED_RED */
+  BSP_LED_Toggle(LED_RED) ;
   UTIL_TIMER_Start(&timerLed);
 }
 
