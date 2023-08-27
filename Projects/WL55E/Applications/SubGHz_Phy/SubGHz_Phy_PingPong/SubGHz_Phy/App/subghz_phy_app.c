@@ -345,7 +345,7 @@ static void PingPong_Process(void)
   switch (State)
   {
     case RX:
-
+#ifndef EKINN_BOARD
       if (isMaster == true)
       {
         if (RxBufferSize > 0)
@@ -399,6 +399,7 @@ static void PingPong_Process(void)
             memcpy(BufferTx, PONG, sizeof(PONG) - 1);
             Radio.Send(BufferTx, PAYLOAD_LEN);
           }
+
           else /* valid reception but not a PING as expected */
           {
             /* Set device as master and start again */
@@ -406,15 +407,27 @@ static void PingPong_Process(void)
             APP_LOG(TS_ON, VLEVEL_L, "Master Rx start\n\r");
             Radio.Rx(RX_TIMEOUT_VALUE);
           }
+
         }
       }
+#else
+      if (RxBufferSize > 0)
+	  {
+    	  APP_LOG(TS_ON, VLEVEL_L, "Rx case for concentrator\n\r");
+	  }
+#endif
       break;
     case TX:
+#ifndef EKINN_BOARD
       APP_LOG(TS_ON, VLEVEL_L, "Rx start\n\r");
       Radio.Rx(RX_TIMEOUT_VALUE);
+#else
+      APP_LOG(TS_ON, VLEVEL_L, "Concentrator Undefined Case\n\r");
+#endif
       break;
     case RX_TIMEOUT:
     case RX_ERROR:
+#ifndef EKINN_BOARD
       if (isMaster == true)
       {
         /* Send the next PING frame */
@@ -428,13 +441,21 @@ static void PingPong_Process(void)
       }
       else
       {
-        APP_LOG(TS_ON, VLEVEL_L, "Slave Rx start\n\r");
+        APP_LOG(TS_ON, VLEVEL_L, "Concentrator Rx start\n\r");
         Radio.Rx(RX_TIMEOUT_VALUE);
       }
+#else
+      APP_LOG(TS_ON, VLEVEL_L, "Slave Rx start\n\r");
+	  Radio.Rx(RX_TIMEOUT_VALUE);
+#endif
       break;
     case TX_TIMEOUT:
+#ifndef EKINN_BOARD
       APP_LOG(TS_ON, VLEVEL_L, "Slave Rx start\n\r");
       Radio.Rx(RX_TIMEOUT_VALUE);
+#else
+      APP_LOG(TS_ON, VLEVEL_L, "Concentrator Undefined Case\n\r");
+#endif
       break;
     default:
       break;
