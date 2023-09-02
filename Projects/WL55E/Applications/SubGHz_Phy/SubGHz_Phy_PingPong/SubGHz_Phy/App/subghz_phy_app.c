@@ -415,6 +415,7 @@ static void PingPong_Process(void)
 	  {
     	  APP_LOG(TS_ON, VLEVEL_L, "Rx case for concentrator\n\r");
 	  }
+      Radio.Rx(RX_TIMEOUT_VALUE);
 #endif
       break;
     case TX:
@@ -464,7 +465,7 @@ static void PingPong_Process(void)
 
 static void OnledEvent(void *context)
 {
-  BSP_LED_Toggle(LED_RED) ;
+  //BSP_LED_Toggle(LED_RED) ;
   UTIL_TIMER_Start(&timerLed);
 }
 
