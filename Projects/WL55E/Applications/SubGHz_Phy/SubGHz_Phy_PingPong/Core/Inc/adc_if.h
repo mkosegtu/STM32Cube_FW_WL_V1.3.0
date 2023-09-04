@@ -70,6 +70,11 @@ extern "C" {
 /* Exported functions prototypes ---------------------------------------------*/
 
 /**
+  * @brief  Initializes the Humidity sensor
+  */
+uint8_t GetHumidtyLevel(void);
+
+/**
   * @brief  Initializes the ADC input
   */
 void SYS_InitMeasurement(void);

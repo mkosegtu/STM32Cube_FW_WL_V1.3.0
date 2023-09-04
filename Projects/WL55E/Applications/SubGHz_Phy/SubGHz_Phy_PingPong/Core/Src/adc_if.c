@@ -44,6 +44,8 @@ extern ADC_HandleTypeDef hadc;
 #define TEMPSENSOR_TYP_CAL1_V          (( int32_t)  760)        /*!< Internal temperature sensor, parameter V30 (unit: mV). Refer to device datasheet for min/typ/max values. */
 #define TEMPSENSOR_TYP_AVGSLOPE        (( int32_t) 2500)        /*!< Internal temperature sensor, parameter Avg_Slope (unit: uV/DegCelsius). Refer to device datasheet for min/typ/max values. */
 
+#define HUMIDITY_RH100					1210
+#define HUMIDITY_RH0					2550
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
@@ -75,6 +77,26 @@ static uint32_t ADC_ReadChannels(uint32_t channel);
 /* USER CODE BEGIN EF */
 
 /* USER CODE END EF */
+
+uint8_t GetHumidtyLevel(void)
+{
+  uint32_t humidityRawValue = 0;
+  uint32_t humidityValue = 0;
+  uint32_t HumidityRelative = 0;
+
+  humidityRawValue = ADC_ReadChannels(ADC_CHANNEL_2);
+
+  humidityValue = (humidityRawValue * 4096) / 5100;
+
+  HumidityRelative = ((humidityValue - HUMIDITY_RH100) * 100) / (HUMIDITY_RH0 - HUMIDITY_RH100);
+
+  if(HumidityRelative > 100)
+	  HumidityRelative = 0;
+  else
+	  HumidityRelative = 100 - HumidityRelative;
+
+  return HumidityRelative;
+}
 
 void SYS_InitMeasurement(void)
 {
@@ -128,7 +150,7 @@ int16_t SYS_GetTemperatureLevel(void)
   }
 
   /* from int16 to q8.7*/
-  temperatureDegreeC <<= 8;
+//  temperatureDegreeC <<= 8;
 
   return (int16_t) temperatureDegreeC;
   /* USER CODE BEGIN SYS_GetTemperatureLevel_2 */
