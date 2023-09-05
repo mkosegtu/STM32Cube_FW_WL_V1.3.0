@@ -70,6 +70,11 @@ extern "C" {
 /* Exported functions prototypes ---------------------------------------------*/
 
 /**
+  * @brief  Initializes the Temperature sensor
+  */
+int16_t GetTemperatureSensorLevel(void);
+
+/**
   * @brief  Initializes the Humidity sensor
   */
 uint8_t GetHumidtyLevel(void);
