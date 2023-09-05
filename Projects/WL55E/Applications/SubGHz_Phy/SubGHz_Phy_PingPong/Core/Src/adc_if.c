@@ -45,7 +45,7 @@ extern ADC_HandleTypeDef hadc;
 #define TEMPSENSOR_TYP_AVGSLOPE        (( int32_t) 2500)        /*!< Internal temperature sensor, parameter Avg_Slope (unit: uV/DegCelsius). Refer to device datasheet for min/typ/max values. */
 
 #define HUMIDITY_RH100					1210
-#define HUMIDITY_RH0					2550
+#define HUMIDITY_RH0					2590
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
@@ -80,12 +80,12 @@ static uint32_t ADC_ReadChannels(uint32_t channel);
 
 int16_t GetTemperatureSensorLevel(void)
 {
-  uint32_t temperatureRawValue = 0;
-  uint32_t temperatureValue = 0;
+  int32_t temperatureRawValue = 0;
+  int32_t temperatureValue = 0;
 
   temperatureRawValue = ADC_ReadChannels(ADC_CHANNEL_3);
 
-  temperatureValue = (temperatureRawValue * 4096) / 5100;
+  temperatureValue = (temperatureRawValue * 4096) / 5000;
 
   return temperatureValue;
 }
@@ -98,7 +98,7 @@ uint8_t GetHumidtyLevel(void)
 
   humidityRawValue = ADC_ReadChannels(ADC_CHANNEL_2);
 
-  humidityValue = (humidityRawValue * 4096) / 5100;
+  humidityValue = (humidityRawValue * 4096) / 5000;
 
   HumidityRelative = ((humidityValue - HUMIDITY_RH100) * 100) / (HUMIDITY_RH0 - HUMIDITY_RH100);
 
