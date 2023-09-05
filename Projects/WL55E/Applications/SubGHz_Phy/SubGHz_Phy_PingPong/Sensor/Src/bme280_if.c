@@ -16,10 +16,10 @@ static int8_t get_temperature(uint32_t period, struct bme280_dev *dev);
 /*!
  * I2C read function map to COINES platform
  */
-BME280_INTF_RET_TYPE bme280_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t length)
+BME280_INTF_RET_TYPE bme280_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
 	HAL_StatusTypeDef ret;
-    HAL_I2C_Mem_Read(&hi2c2, BME280_I2C_ADDR_PRIM, (uint16_t)reg_addr,
+	ret = HAL_I2C_Mem_Read(&hi2c2, BME280_I2C_ADDR_PRIM, (uint16_t)reg_addr,
       		I2C_MEMADD_SIZE_8BIT, reg_data, (uint16_t)length, 10000);
     if(ret == HAL_OK)
 		return BME280_INTF_RET_SUCCESS;
@@ -29,7 +29,7 @@ BME280_INTF_RET_TYPE bme280_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32
 /*!
  * I2C write function map to COINES platform
  */
-BME280_INTF_RET_TYPE bme280_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t length)
+BME280_INTF_RET_TYPE bme280_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
 	HAL_StatusTypeDef ret;
     ret = HAL_I2C_Mem_Write(&hi2c2, BME280_I2C_ADDR_PRIM, (uint16_t)reg_addr,
@@ -73,11 +73,11 @@ int bme290_init(void)
 	dev.delay_us = bme280_delay_us;
 
     rslt = bme280_init(&dev);
-    bme280_error_codes_print_result("bme280_init", rslt);
+    //bme280_error_codes_print_result("bme280_init", rslt);
 
     /* Always read the current settings before writing, especially when all the configuration is not modified */
     rslt = bme280_get_sensor_settings(&settings, &dev);
-    bme280_error_codes_print_result("bme280_get_sensor_settings", rslt);
+    //bme280_error_codes_print_result("bme280_get_sensor_settings", rslt);
 
     /* Configuring the over-sampling rate, filter coefficient and standby time */
     /* Overwrite the desired settings */
@@ -92,27 +92,27 @@ int bme290_init(void)
     settings.standby_time = BME280_STANDBY_TIME_0_5_MS;
 
     rslt = bme280_set_sensor_settings(BME280_SEL_ALL_SETTINGS, &settings, &dev);
-    bme280_error_codes_print_result("bme280_set_sensor_settings", rslt);
+    //bme280_error_codes_print_result("bme280_set_sensor_settings", rslt);
 
     /* Always set the power mode after setting the configuration */
     rslt = bme280_set_sensor_mode(BME280_POWERMODE_NORMAL, &dev);
-    bme280_error_codes_print_result("bme280_set_power_mode", rslt);
+    //bme280_error_codes_print_result("bme280_set_power_mode", rslt);
 
     /* Calculate measurement time in microseconds */
     rslt = bme280_cal_meas_delay(&period, &settings);
-    bme280_error_codes_print_result("bme280_cal_meas_delay", rslt);
+    //bme280_error_codes_print_result("bme280_cal_meas_delay", rslt);
 
-    printf("\n calculation (Data displayed are compensated values)\n");
-    printf("Measurement time : %lu us\n\n", (long unsigned int)period);
+//    printf("\n calculation (Data displayed are compensated values)\n");
+//    printf("Measurement time : %lu us\n\n", (long unsigned int)period);
 
     rslt = get_humidity(period, &dev);
-    bme280_error_codes_print_result("get_humidity", rslt);
+    //bme280_error_codes_print_result("get_humidity", rslt);
 
     rslt = get_pressure(period, &dev);
-	bme280_error_codes_print_result("get_pressure", rslt);
+	//bme280_error_codes_print_result("get_pressure", rslt);
 
 	rslt = get_temperature(period, &dev);
-	bme280_error_codes_print_result("get_temperature", rslt);
+	//bme280_error_codes_print_result("get_temperature", rslt);
 
 
     return 0;
@@ -131,7 +131,7 @@ static int8_t get_humidity(uint32_t period, struct bme280_dev *dev)
     while (idx < SAMPLE_COUNT)
     {
         rslt = bme280_get_regs(BME280_REG_STATUS, &status_reg, 1, dev);
-        bme280_error_codes_print_result("bme280_get_regs", rslt);
+        //bme280_error_codes_print_result("bme280_get_regs", rslt);
 
         if (status_reg & BME280_STATUS_MEAS_DONE)
         {
@@ -140,17 +140,17 @@ static int8_t get_humidity(uint32_t period, struct bme280_dev *dev)
 
             /* Read compensated data */
             rslt = bme280_get_sensor_data(BME280_HUM, &comp_data, dev);
-            bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
+            //bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
 
 #ifndef BME280_DOUBLE_ENABLE
             comp_data.humidity = comp_data.humidity / 1000;
 #endif
 
-#ifdef BME280_DOUBLE_ENABLE
-            printf("Humidity[%d]:   %lf %%RH\n", idx, comp_data.humidity);
-#else
-            printf("Humidity[%d]:   %lu %%RH\n", idx, (long unsigned int)comp_data.humidity);
-#endif
+//#ifdef BME280_DOUBLE_ENABLE
+//            printf("Humidity[%d]:   %lf %%RH\n", idx, comp_data.humidity);
+//#else
+//            printf("Humidity[%d]:   %lu %%RH\n", idx, (long unsigned int)comp_data.humidity);
+//#endif
             idx++;
         }
     }
@@ -171,7 +171,7 @@ static int8_t get_pressure(uint32_t period, struct bme280_dev *dev)
     while (idx < SAMPLE_COUNT)
     {
         rslt = bme280_get_regs(BME280_REG_STATUS, &status_reg, 1, dev);
-        bme280_error_codes_print_result("bme280_get_regs", rslt);
+        //bme280_error_codes_print_result("bme280_get_regs", rslt);
 
         if (status_reg & BME280_STATUS_MEAS_DONE)
         {
@@ -180,17 +180,17 @@ static int8_t get_pressure(uint32_t period, struct bme280_dev *dev)
 
             /* Read compensated data */
             rslt = bme280_get_sensor_data(BME280_PRESS, &comp_data, dev);
-            bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
+            //bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
 
 #ifdef BME280_64BIT_ENABLE
             comp_data.pressure = comp_data.pressure / 100;
 #endif
 
-#ifdef BME280_DOUBLE_ENABLE
-            printf("Pressure[%d]:  %lf Pa\n", idx, comp_data.pressure);
-#else
-            printf("Pressure[%d]:   %lu Pa\n", idx, (long unsigned int)comp_data.pressure);
-#endif
+//#ifdef BME280_DOUBLE_ENABLE
+//            printf("Pressure[%d]:  %lf Pa\n", idx, comp_data.pressure);
+//#else
+//            printf("Pressure[%d]:   %lu Pa\n", idx, (long unsigned int)comp_data.pressure);
+//#endif
             idx++;
         }
     }
@@ -212,7 +212,7 @@ static int8_t get_temperature(uint32_t period, struct bme280_dev *dev)
     while (idx < SAMPLE_COUNT)
     {
         rslt = bme280_get_regs(BME280_REG_STATUS, &status_reg, 1, dev);
-        bme280_error_codes_print_result("bme280_get_regs", rslt);
+        //bme280_error_codes_print_result("bme280_get_regs", rslt);
 
         if (status_reg & BME280_STATUS_MEAS_DONE)
         {
@@ -221,17 +221,17 @@ static int8_t get_temperature(uint32_t period, struct bme280_dev *dev)
 
             /* Read compensated data */
             rslt = bme280_get_sensor_data(BME280_TEMP, &comp_data, dev);
-            bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
+            //bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
 
 #ifndef BME280_DOUBLE_ENABLE
             comp_data.temperature = comp_data.temperature / 100;
 #endif
 
-#ifdef BME280_DOUBLE_ENABLE
-            printf("Temperature[%d]:   %lf deg C\n", idx, comp_data.temperature);
-#else
-            printf("Temperature[%d]:   %ld deg C\n", idx, (long int)comp_data.temperature);
-#endif
+//#ifdef BME280_DOUBLE_ENABLE
+//            printf("Temperature[%d]:   %lf deg C\n", idx, comp_data.temperature);
+//#else
+//            printf("Temperature[%d]:   %ld deg C\n", idx, (long int)comp_data.temperature);
+//#endif
             idx++;
         }
     }
