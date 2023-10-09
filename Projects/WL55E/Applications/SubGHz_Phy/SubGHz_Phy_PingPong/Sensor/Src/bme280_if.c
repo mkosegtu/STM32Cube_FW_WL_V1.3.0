@@ -19,7 +19,7 @@ static int8_t get_temperature(uint32_t period, struct bme280_dev *dev);
 BME280_INTF_RET_TYPE bme280_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
 	HAL_StatusTypeDef ret;
-	ret = HAL_I2C_Mem_Read(&hi2c2, BME280_I2C_ADDR_PRIM, (uint16_t)reg_addr,
+	ret = HAL_I2C_Mem_Read(&hi2c2, BME280_I2C_ADDR_SEC << 1, (uint16_t)reg_addr,
       		I2C_MEMADD_SIZE_8BIT, reg_data, (uint16_t)length, 10000);
     if(ret == HAL_OK)
 		return BME280_INTF_RET_SUCCESS;
@@ -32,7 +32,7 @@ BME280_INTF_RET_TYPE bme280_i2c_read(uint8_t reg_addr, uint8_t *reg_data, uint32
 BME280_INTF_RET_TYPE bme280_i2c_write(uint8_t reg_addr, const uint8_t *reg_data, uint32_t length, void *intf_ptr)
 {
 	HAL_StatusTypeDef ret;
-    ret = HAL_I2C_Mem_Write(&hi2c2, BME280_I2C_ADDR_PRIM, (uint16_t)reg_addr,
+    ret = HAL_I2C_Mem_Write(&hi2c2, BME280_I2C_ADDR_SEC << 1, (uint16_t)reg_addr,
           		I2C_MEMADD_SIZE_8BIT, reg_data, (uint16_t)length, 10000);
     if(ret == HAL_OK)
     	return BME280_INTF_RET_SUCCESS;
