@@ -28,6 +28,11 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+/**
+  * @brief buffer to receive 1 character
+  */
+extern uint8_t charRx;
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -39,6 +44,20 @@ extern UART_HandleTypeDef huart1;
 /* USER CODE END Private defines */
 
 void MX_USART1_UART_Init(void);
+
+/**
+  * @brief  TX complete callback
+  * @return none
+  */
+extern void (*TxCpltCallback)(void *);
+/**
+  * @brief  RX complete callback
+  * @param  rxChar ptr of chars buffer sent by user
+  * @param  size buffer size
+  * @param  error errorcode
+  * @return none
+  */
+extern void (*RxCpltCallback)(uint8_t *rxChar, uint16_t size, uint8_t error);
 
 /* USER CODE BEGIN Prototypes */
 
