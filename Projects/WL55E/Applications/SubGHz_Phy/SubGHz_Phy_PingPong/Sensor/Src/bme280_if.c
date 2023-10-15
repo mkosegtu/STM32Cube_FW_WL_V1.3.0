@@ -12,7 +12,8 @@ static uint8_t dev_addr;
 static int8_t get_humidity(uint32_t period, struct bme280_dev *dev);
 static int8_t get_pressure(uint32_t period, struct bme280_dev *dev);
 static int8_t get_temperature(uint32_t period, struct bme280_dev *dev);
-
+uint32_t period;
+struct bme280_dev dev;
 /*!
  * I2C read function map to COINES platform
  */
@@ -48,11 +49,10 @@ void bme280_delay_us(uint32_t period, void *intf_ptr)
 }
 
 /* This function starts the execution of program. */
-int bme290_init(void)
+int8_t bme280_init_sensor(void)
 {
     int8_t rslt;
     uint32_t period;
-    struct bme280_dev dev;
     struct bme280_settings settings;
 
     /* Interface selection is to be updated as parameter
@@ -102,20 +102,34 @@ int bme290_init(void)
     rslt = bme280_cal_meas_delay(&period, &settings);
     //bme280_error_codes_print_result("bme280_cal_meas_delay", rslt);
 
-//    printf("\n calculation (Data displayed are compensated values)\n");
-//    printf("Measurement time : %lu us\n\n", (long unsigned int)period);
-
-    rslt = get_humidity(period, &dev);
-    //bme280_error_codes_print_result("get_humidity", rslt);
-
-    rslt = get_pressure(period, &dev);
-	//bme280_error_codes_print_result("get_pressure", rslt);
-
-	rslt = get_temperature(period, &dev);
-	//bme280_error_codes_print_result("get_temperature", rslt);
-
-
     return 0;
+}
+
+int8_t bme280_get_data(struct bme280_data* comp_data)
+{
+	int8_t rslt = BME280_E_NULL_PTR;
+	int8_t idx = 0;
+	uint8_t status_reg;
+	uint8_t sensor_comp = BME280_PRESS | BME280_TEMP | BME280_HUM;
+
+	rslt = bme280_get_regs(BME280_REG_STATUS, &status_reg, 1, &dev);
+	//bme280_error_codes_print_result("bme280_get_regs", rslt);
+
+	if (status_reg & BME280_STATUS_MEAS_DONE)
+	{
+		/* Measurement time delay given to read sample */
+		dev.delay_us(period, dev.intf_ptr);
+
+		/* Read compensated data */
+		rslt = bme280_get_sensor_data(sensor_comp, &comp_data, &dev);
+		//bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
+
+#ifndef BME280_DOUBLE_ENABLE
+		comp_data.humidity = comp_data.humidity / 1000;
+#endif
+	}
+
+	return rslt;
 }
 
 /*!

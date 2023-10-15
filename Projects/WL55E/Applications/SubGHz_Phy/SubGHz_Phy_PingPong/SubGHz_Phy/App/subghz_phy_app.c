@@ -30,6 +30,9 @@
 #include "utilities_def.h"
 #include "app_version.h"
 #include "subghz_phy_version.h"
+#include "bme280.h"
+#include "ltr390uv.h"
+#include "ens160.h"
 /* USER CODE END Includes */
 
 /* External variables ---------------------------------------------------------*/
@@ -71,7 +74,7 @@ typedef enum
 /* Afc bandwidth in Hz */
 #define FSK_AFC_BANDWIDTH             83333
 /* LED blink Period*/
-#define LED_PERIOD_MS                 200
+#define LED_PERIOD_MS                 5000
 
 /* USER CODE END PD */
 
@@ -105,6 +108,8 @@ bool isMaster = true;
 /* the closest the random delays are, the longer it will
    take for the devices to sync when started simultaneously*/
 static int32_t random_delay;
+
+struct sGatewayPacket gGatewayPacket;
 
 /* USER CODE END PV */
 
@@ -245,6 +250,11 @@ void SubghzApp_Init(void)
   /*register task to to be run in while(1) after Radio IT*/
   UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), UTIL_SEQ_RFU, PingPong_Process);
   /* USER CODE END SubghzApp_Init_2 */
+
+  memset(&gGatewayPacket, 0x0, sizeof(struct sGatewaySensors));
+  bme280_init_sensor();
+  ens160_init();
+  ltr390uv_init();
 }
 
 /* USER CODE BEGIN EF */
@@ -340,6 +350,10 @@ static void OnRxError(void)
 /* USER CODE BEGIN PrFD */
 static void PingPong_Process(void)
 {
+  struct sNodePacket nodePacket;
+  int8_t index = 0;
+  int8_t nonUsedIndex = -1;
+
   Radio.Sleep();
 
   switch (State)
@@ -411,8 +425,28 @@ static void PingPong_Process(void)
         }
       }
 #else
-      if (RxBufferSize > 0)
+      if (RxBufferSize > 0 && RxBufferSize == sizeof(struct sNodePacket))
 	  {
+    	  memset(&nodePacket, 0, sizeof(struct sNodePacket));
+    	  memcpy(&nodePacket, BufferRx, sizeof(struct sNodePacket));
+
+    	  for(index = 0; index < NodeNumber; index++)
+    	  {
+    		  if(gGatewayPacket.nodePacket[index].u4NodeId ==
+    		     nodePacket.u4NodeId)
+    		  {
+    			  memcpy(&gGatewayPacket.nodePacket[index], &nodePacket,
+    					 sizeof(struct sNodePacket));
+    			  break;
+    		  }
+    		  if(nonUsedIndex == -1 && gGatewayPacket.nodePacket[index].u4NodeId == 0)
+    			  nonUsedIndex = index;
+    	  }
+    	  if(index == 10)
+    	  {
+    		  memcpy(&gGatewayPacket.nodePacket[index], &nodePacket,
+					 sizeof(struct sNodePacket));
+    	  }
     	  APP_LOG(TS_ON, VLEVEL_L, "Rx case for concentrator\n\r");
 	  }
       Radio.Rx(RX_TIMEOUT_VALUE);
@@ -465,7 +499,32 @@ static void PingPong_Process(void)
 
 static void OnledEvent(void *context)
 {
+  struct bme280_data comp_data;
+  struct ens160_data_str ens160_data;
+  float ltr390uv_als_data;
+  float ltr390uv_uvs_data;
   //BSP_LED_Toggle(LED_RED) ;
+
+  bme280_get_data(&comp_data);
+  memcpy(&gGatewayPacket.gatewaySensors.u4Temp, &comp_data.temperature, 4);
+  memcpy(&gGatewayPacket.gatewaySensors.u4Humidity, &comp_data.humidity, 4);
+  memcpy(&gGatewayPacket.gatewaySensors.u4Pressure, &comp_data.pressure, 4);
+
+  ens160_measure(&ens160_data);
+  gGatewayPacket.gatewaySensors.u2Tvoc = ens160_data._data_tvoc;
+  gGatewayPacket.gatewaySensors.u2Co2 = ens160_data._data_eco2;
+  gGatewayPacket.gatewaySensors.u1aqi = ens160_data._data_aqi;;
+
+  ltr390uv_set_mode(eALSMode);
+  ltr390uv_read_als_transform_data(&ltr390uv_als_data);
+  memcpy(&gGatewayPacket.gatewaySensors.u4Als, &ltr390uv_als_data, 4);
+  ltr390uv_set_mode(eUVSMode);
+  ltr390uv_read_uvs_data(&ltr390uv_uvs_data);
+  memcpy(&gGatewayPacket.gatewaySensors.u4Uvs, &ltr390uv_uvs_data, 4);
+
+  memcpy(BufferTx, &gGatewayPacket, PAYLOAD_LEN);
+  Radio.Send(BufferTx, PAYLOAD_LEN);
+
   UTIL_TIMER_Start(&timerLed);
 }
 

@@ -13,10 +13,10 @@
 
 uint8_t a_gain[5] = {1,3,6,9,18};
 double a_int[6] = {4.,2.,1.,0.5,0.25,0.03125};
-uint8_t gain = 0;
-uint8_t resolution = 0;
-uint8_t mode = 0;
-uint8_t addr = 0xA6;
+volatile uint8_t gain = eGain1;
+volatile uint8_t resolution = 0;
+volatile uint8_t mode = 0;
+volatile uint8_t addr = 0xA6;
 
 static uint8_t ltr390uv_read_reg(uint8_t reg, uint8_t *pBuf, uint16_t size);
 
@@ -60,17 +60,28 @@ uint32_t ltr390uv_read_original_data(void)
   return data;
 }
 
-float ltr390uv_read_als_transform_data(void)
+void ltr390uv_read_uvs_data(float* data)
 {
-  float data=0.0;
+  uint32_t original_data = 0;
+  uint8_t buffer[3];
+
+  ltr390uv_read_reg(LTR390UV_UVSDATA, buffer, 3);
+
+  original_data = (buffer[2]<<16|buffer[1]<<8|buffer[0]) & 0xFFFFF;
+  data = original_data;
+  return;
+}
+
+void ltr390uv_read_als_transform_data(float* data)
+{
   uint32_t original_data = 0;
   uint8_t buffer[3];
   if(mode == eALSMode){
 	ltr390uv_read_reg(LTR390UV_ALSDATA, buffer, 3);
 	original_data = (buffer[2]<<16|buffer[1]<<8|buffer[0]) & 0xFFFFF;
-    data = (0.6*original_data)/(a_gain[gain]*a_int[resolution]);
+    *data = (0.6*original_data)/(a_gain[gain]*a_int[resolution]);
   }
-  return data;
+  return;
 }
 
 static uint8_t ltr390uv_read_reg(uint8_t reg, uint8_t *pBuf, uint16_t size)
@@ -87,4 +98,17 @@ static uint8_t ltr390uv_write_reg(uint8_t reg, uint8_t *pBuf, uint16_t size)
   ret = HAL_I2C_Mem_Write(&hi2c2, (uint16_t)addr, (uint16_t)reg,
   		I2C_MEMADD_SIZE_8BIT, pBuf, size, 10000);
   return ret;
+}
+
+int ltr390uv_init(void)
+{
+	ltr390uv_set_als_or_uvs_meas_rate(e18bit, e100ms);
+	ltr390uv_set_als_or_uvs_gain(eGain1);
+	ltr390uv_set_mode(eALSMode);//Set ambient light mode
+}
+
+int ltr390uv_read_id(void)
+{
+	uint8_t buffer[2];
+	ltr390uv_read_reg(LTR390UV_PART_ID, buffer, 1);
 }

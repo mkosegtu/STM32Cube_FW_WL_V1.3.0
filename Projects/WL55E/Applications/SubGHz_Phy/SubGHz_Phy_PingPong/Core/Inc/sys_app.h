@@ -68,8 +68,40 @@ extern "C" {
 #error "APP_LOG_ENABLED not defined or out of range <0,1>"
 #endif /* APP_LOG_ENABLED */
 
-/* USER CODE BEGIN EM */
+#define NodeNumber 10
 
+/* USER CODE BEGIN EM */
+struct sNodePacket{
+	uint8_t u1Length;
+	uint8_t u4NodeId;
+	uint16_t u4Npk;
+	uint32_t u4Temp;
+	uint32_t u4Humidity;
+	uint32_t u4Ec;
+};
+
+struct sGatewaySensors
+{
+	uint32_t u4Temp;
+	uint32_t u4Humidity;
+	uint32_t u4Pressure;
+	uint16_t u2Tvoc;
+	uint16_t u2Co2;
+	uint16_t u2Co;
+	uint32_t u4Uvs;
+	uint32_t u4Als;
+	uint8_t u1aqi;
+	uint8_t reserver;
+};
+
+struct sGatewayPacket
+{
+	uint16_t u4Length;
+	uint16_t u4GatewayId;
+	struct sGatewaySensors gatewaySensors;//28
+	struct sNodePacket nodePacket[NodeNumber];//160
+	uint8_t reserve[64];
+};
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

@@ -117,4 +117,15 @@ struct ens160 {
 	uint8_t				_misr;
 };
 
+struct ens160_data_str {
+	uint8_t				_data_aqi;
+	uint16_t			_data_tvoc;
+	uint16_t			_data_eco2;
+	uint16_t			_data_aqi500;
+};
+
+bool ens160_checkPartID(void);
+int ens160_measure(struct ens160_data_str* ens160_data);
+int ens160_init(void);
+
 #endif

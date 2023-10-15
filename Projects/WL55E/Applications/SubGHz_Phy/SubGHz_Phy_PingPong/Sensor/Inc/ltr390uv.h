@@ -147,6 +147,12 @@ uint32_t ltr390uv_read_original_data(void);
  * @brief Get the converted ALS data
  * @return Return the converted data
  */
-float ltr390uv_read_als_transform_data(void);
+void ltr390uv_read_als_transform_data(float* data);
+
+int ltr390uv_init(void);
+
+int ltr390uv_read_id(void);
+
+void ltr390uv_read_uvs_data(float* data);
 
 #endif

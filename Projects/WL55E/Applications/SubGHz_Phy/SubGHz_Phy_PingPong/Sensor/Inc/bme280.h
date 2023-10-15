@@ -390,6 +390,10 @@ int8_t bme280_compensate_data(uint8_t sensor_comp,
  */
 int8_t bme280_cal_meas_delay(uint32_t *max_delay, const struct bme280_settings *settings);
 
+int8_t bme280_get_data(struct bme280_data* comp_data);
+
+int8_t bme280_init_sensor(void);
+
 #ifdef __cplusplus
 }
 #endif /* End of CPP guard */
