@@ -254,11 +254,6 @@ void SubghzApp_Init(void)
   /*register task to to be run in while(1) after Radio IT*/
   UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), UTIL_SEQ_RFU, PingPong_Process);
   /* USER CODE END SubghzApp_Init_2 */
-
-  memset(&gGatewayPacket, 0x0, sizeof(struct sGatewaySensors));
-  bme280_init_sensor();
-  ens160_init();
-  ltr390uv_init();
 }
 
 /* USER CODE BEGIN EF */
