@@ -254,8 +254,9 @@ void SubghzApp_Init(void)
   Radio.Rx(RX_TIMEOUT_VALUE + random_delay);
 
   /*register task to to be run in while(1) after Radio IT*/
-  UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), UTIL_SEQ_RFU, PingPong_Process);
+  //UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), UTIL_SEQ_RFU, PingPong_Process);
   /* USER CODE END SubghzApp_Init_2 */
+
 }
 
 /* USER CODE BEGIN EF */
@@ -270,7 +271,7 @@ static void OnTxDone(void)
   /* Update the State of the FSM*/
   State = TX;
   /* Run PingPong process in background*/
-  UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
+  //UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
   /* USER CODE END OnTxDone */
 }
 
@@ -311,7 +312,7 @@ static void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraS
 //  }
 //  APP_LOG(TS_OFF, VLEVEL_H, "\n\r");
   /* Run PingPong process in background*/
-  UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
+  //UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
   /* USER CODE END OnRxDone */
 }
 
@@ -322,7 +323,7 @@ static void OnTxTimeout(void)
   /* Update the State of the FSM*/
   State = TX_TIMEOUT;
   /* Run PingPong process in background*/
-  UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
+  //UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
   /* USER CODE END OnTxTimeout */
 }
 
@@ -333,7 +334,7 @@ static void OnRxTimeout(void)
   /* Update the State of the FSM*/
   State = RX_TIMEOUT;
   /* Run PingPong process in background*/
-  UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
+  //UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
   /* USER CODE END OnRxTimeout */
 }
 
@@ -344,7 +345,7 @@ static void OnRxError(void)
   /* Update the State of the FSM*/
   State = RX_ERROR;
   /* Run PingPong process in background*/
-  UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
+  //UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
   /* USER CODE END OnRxError */
 }
 
@@ -501,30 +502,20 @@ static void PingPong_Process(void)
 
 static void OnSensorEvent(void *context)
 {
-  struct bme280_data comp_data;
-  struct ens160_data_str ens160_data;
-  float ltr390uv_als_data;
-  uint32_t ltr390uv_uvs_data;
-  //BSP_LED_Toggle(LED_RED) ;
+  struct sNodePacket nodePacket;
+  HAL_GPIO_WritePin(SENSOR_POWER_CONTROL_GPIO_Port, SENSOR_POWER_CONTROL_Pin, GPIO_PIN_SET);
+  HAL_Delay(2000);
+  BSP_LED_Toggle(LED_RED) ;
+  nodePacket.humidity.u2Value = GetHumidtyLevel();
+  nodePacket.humidity.u2NodeId = 1;
+  nodePacket.temp.u2Value = SYS_GetTemperatureLevel();
+  nodePacket.temp.u2NodeId = 1;
+  nodePacket.ec.u2Value = GetEcLevel();
+  nodePacket.ec.u2NodeId = 1;
+  HAL_GPIO_WritePin(SENSOR_POWER_CONTROL_GPIO_Port, SENSOR_POWER_CONTROL_Pin, GPIO_PIN_RESET);
+  memcpy(BufferTx, &nodePacket, sizeof(struct sNodePacket));
 
-  bme280_get_data(&comp_data);
-  memcpy(&gGatewayPacket.gatewaySensors.u8Temp, &comp_data.temperature, 8);
-  memcpy(&gGatewayPacket.gatewaySensors.u8Humidity, &comp_data.humidity, 8);
-  memcpy(&gGatewayPacket.gatewaySensors.u8Pressure, &comp_data.pressure, 8);
-
-  ens160_measure(&ens160_data);
-  gGatewayPacket.gatewaySensors.u2Tvoc = ens160_data._data_tvoc;
-  gGatewayPacket.gatewaySensors.u2Co2 = ens160_data._data_eco2;
-  gGatewayPacket.gatewaySensors.u2aqi = ens160_data._data_aqi;;
-
-  ltr390uv_set_mode(eALSMode);
-  ltr390uv_read_als_transform_data(&ltr390uv_als_data);
-  memcpy(&gGatewayPacket.gatewaySensors.u4Als, &ltr390uv_als_data, 4);
-  ltr390uv_set_mode(eUVSMode);
-  ltr390uv_read_uvs_data(&ltr390uv_uvs_data);
-  memcpy(&gGatewayPacket.gatewaySensors.u4Uvs, &ltr390uv_uvs_data, 4);
-
-  Uart_Send((uint8_t *)&gGatewayPacket, sizeof(struct sGatewayPacket));
+  Radio.Send(BufferTx, PAYLOAD_LEN);
 
   if(gSensorEventCounter < 5)
   {
