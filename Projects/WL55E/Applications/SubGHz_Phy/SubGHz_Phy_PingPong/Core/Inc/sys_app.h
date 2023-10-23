@@ -87,20 +87,20 @@ struct sGatewaySensors
 	uint32_t u4Pressure;
 	uint16_t u2Tvoc;
 	uint16_t u2Co2;
-	uint16_t u2Co;
+	uint32_t u2Co;
 	uint32_t u4Uvs;
 	uint32_t u4Als;
-	uint8_t u1aqi;
-	uint8_t reserver;
+	uint16_t u1aqi;
+	uint16_t reserver;
 };
 
 struct sGatewayPacket
 {
 	uint16_t u4Length;
 	uint16_t u4GatewayId;
-	struct sGatewaySensors gatewaySensors;//28
+	struct sGatewaySensors gatewaySensors;//32
 	struct sNodePacket nodePacket[NodeNumber];//160
-	uint8_t reserve[64];
+	uint8_t reserve[60];
 };
 /* USER CODE END EM */
 
