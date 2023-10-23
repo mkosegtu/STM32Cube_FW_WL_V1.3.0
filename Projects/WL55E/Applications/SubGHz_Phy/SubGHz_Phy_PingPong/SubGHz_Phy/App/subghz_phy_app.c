@@ -431,14 +431,14 @@ static void PingPong_Process(void)
 
     	  for(index = 0; index < NodeNumber; index++)
     	  {
-    		  if(gGatewayPacket.nodePacket[index].u4NodeId ==
-    		     nodePacket.u4NodeId)
+    		  if(gGatewayPacket.nodePacket[index].temp.u2NodeId ==
+    		     nodePacket.temp.u2NodeId)
     		  {
     			  memcpy(&gGatewayPacket.nodePacket[index], &nodePacket,
     					 sizeof(struct sNodePacket));
     			  break;
     		  }
-    		  if(nonUsedIndex == -1 && gGatewayPacket.nodePacket[index].u4NodeId == 0)
+    		  if(nonUsedIndex == -1 && gGatewayPacket.nodePacket[index].temp.u2NodeId == 0)
     			  nonUsedIndex = index;
     	  }
     	  if(index == 10)
@@ -505,14 +505,14 @@ static void OnledEvent(void *context)
   //BSP_LED_Toggle(LED_RED) ;
 
   bme280_get_data(&comp_data);
-  memcpy(&gGatewayPacket.gatewaySensors.u4Temp, &comp_data.temperature, 4);
-  memcpy(&gGatewayPacket.gatewaySensors.u4Humidity, &comp_data.humidity, 4);
-  memcpy(&gGatewayPacket.gatewaySensors.u4Pressure, &comp_data.pressure, 4);
+  memcpy(&gGatewayPacket.gatewaySensors.u8Temp, &comp_data.temperature, 8);
+  memcpy(&gGatewayPacket.gatewaySensors.u8Humidity, &comp_data.humidity, 8);
+  memcpy(&gGatewayPacket.gatewaySensors.u8Pressure, &comp_data.pressure, 8);
 
   ens160_measure(&ens160_data);
   gGatewayPacket.gatewaySensors.u2Tvoc = ens160_data._data_tvoc;
   gGatewayPacket.gatewaySensors.u2Co2 = ens160_data._data_eco2;
-  gGatewayPacket.gatewaySensors.u1aqi = ens160_data._data_aqi;;
+  gGatewayPacket.gatewaySensors.u2aqi = ens160_data._data_aqi;;
 
   ltr390uv_set_mode(eALSMode);
   ltr390uv_read_als_transform_data(&ltr390uv_als_data);

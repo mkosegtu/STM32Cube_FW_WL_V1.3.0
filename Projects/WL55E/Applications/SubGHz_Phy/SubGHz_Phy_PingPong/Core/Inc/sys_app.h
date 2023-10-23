@@ -70,37 +70,40 @@ extern "C" {
 
 #define NodeNumber 10
 
+struct sSensorNode {
+	uint16_t u2NodeId;
+	uint16_t u2Value;
+};
+
 /* USER CODE BEGIN EM */
 struct sNodePacket{
-	uint8_t u1Length;
-	uint8_t u4NodeId;
-	uint16_t u4Npk;
-	uint32_t u4Temp;
-	uint32_t u4Humidity;
-	uint32_t u4Ec;
+	struct sSensorNode npk;
+	struct sSensorNode temp;
+	struct sSensorNode humidity;
+	struct sSensorNode ec;
 };
 
 struct sGatewaySensors
 {
-	uint32_t u4Temp;
-	uint32_t u4Humidity;
-	uint32_t u4Pressure;
+	uint64_t u8Temp;
+	uint64_t u8Humidity;
+	uint64_t u8Pressure;
 	uint16_t u2Tvoc;
 	uint16_t u2Co2;
-	uint32_t u2Co;
+	uint32_t u4Co;
 	uint32_t u4Uvs;
 	uint32_t u4Als;
-	uint16_t u1aqi;
-	uint16_t reserver;
+	uint16_t u2aqi;
+	uint16_t reserve;
 };
 
 struct sGatewayPacket
 {
 	uint16_t u4Length;
 	uint16_t u4GatewayId;
-	struct sGatewaySensors gatewaySensors;//32
+	struct sGatewaySensors gatewaySensors;//44
 	struct sNodePacket nodePacket[NodeNumber];//160
-	uint8_t reserve[60];
+	uint8_t reserve[40];
 };
 /* USER CODE END EM */
 
