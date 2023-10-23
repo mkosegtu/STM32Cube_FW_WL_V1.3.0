@@ -57,7 +57,7 @@ typedef enum
 /* USER CODE BEGIN PD */
 /* Configurations */
 /*Timeout*/
-#define RX_TIMEOUT_VALUE              3000
+#define RX_TIMEOUT_VALUE              0
 #define TX_TIMEOUT_VALUE              3000
 /* PING string*/
 #define PING "PING"
@@ -425,7 +425,7 @@ static void PingPong_Process(void)
         }
       }
 #else
-      if (RxBufferSize > 0 && RxBufferSize == sizeof(struct sNodePacket))
+      if (RxBufferSize > 0)
 	  {
     	  memset(&nodePacket, 0, sizeof(struct sNodePacket));
     	  memcpy(&nodePacket, BufferRx, sizeof(struct sNodePacket));
