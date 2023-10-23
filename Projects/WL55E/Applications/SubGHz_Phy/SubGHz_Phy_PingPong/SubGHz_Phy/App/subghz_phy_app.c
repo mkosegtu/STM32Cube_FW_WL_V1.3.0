@@ -164,6 +164,10 @@ void SubghzApp_Init(void)
 
   BSP_LED_Init(LED_RED);
   BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
+  memset(&gGatewayPacket, 0x0, sizeof(struct sGatewaySensors));
+  bme280_init_sensor();
+  ens160_init();
+  ltr390uv_init();
 
   APP_LOG(TS_OFF, VLEVEL_M, "\n\rPING PONG\n\r");
   /* Get SubGHY_Phy APP version*/
@@ -502,7 +506,7 @@ static void OnledEvent(void *context)
   struct bme280_data comp_data;
   struct ens160_data_str ens160_data;
   float ltr390uv_als_data;
-  float ltr390uv_uvs_data;
+  uint32_t ltr390uv_uvs_data;
   //BSP_LED_Toggle(LED_RED) ;
 
   bme280_get_data(&comp_data);
@@ -522,8 +526,7 @@ static void OnledEvent(void *context)
   ltr390uv_read_uvs_data(&ltr390uv_uvs_data);
   memcpy(&gGatewayPacket.gatewaySensors.u4Uvs, &ltr390uv_uvs_data, 4);
 
-  memcpy(BufferTx, &gGatewayPacket, PAYLOAD_LEN);
-  Radio.Send(BufferTx, PAYLOAD_LEN);
+  Uart_Send((uint8_t *)&gGatewayPacket, sizeof(struct sGatewayPacket));
 
   UTIL_TIMER_Start(&timerLed);
 }

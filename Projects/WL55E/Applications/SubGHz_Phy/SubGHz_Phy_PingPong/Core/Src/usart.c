@@ -72,7 +72,7 @@ void MX_USART1_UART_Init(void)
 
 void MX_USART2_UART_Init(void)
 {
-  huart2.Instance = USART1;
+  huart2.Instance = USART2;
   huart2.Init.BaudRate = 112500;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;

@@ -250,28 +250,19 @@ int ens160_measure(struct ens160_data_str* ens160_data) {
 	uint8_t i2cbuf[8];
 	uint8_t status;
 	int newData = 0;
-	bool waitForNew = true;
+	bool waitForNew = false;
 
-	// Set default status for early bail out
-//	if (debugENS160) Serial.println("Start measurement");
-	
 	if (waitForNew) {
 		do {
 			TIMER_IF_DelayMs(1);
 			status = ens160_read8(slaveaddr, ENS160_REG_DATA_STATUS);
-			
-//			if (debugENS160) {
-//				Serial.print("Status: ");
-//				Serial.println(status);
-//			}
-			
 		} while (!IS_NEWDAT(status));
 	} else {
 		status = ens160_read8(slaveaddr, ENS160_REG_DATA_STATUS);
 	}
 	
 	// Read predictions
-	if (IS_NEWDAT(status)) {
+	//if (IS_NEWDAT(status)) {
 		newData = 1;
 		ens160_read(slaveaddr, ENS160_REG_DATA_AQI, i2cbuf, 7);
 		ens160_data->_data_aqi = i2cbuf[0];
@@ -279,7 +270,7 @@ int ens160_measure(struct ens160_data_str* ens160_data) {
 		ens160_data->_data_eco2 = i2cbuf[3] | ((uint16_t)i2cbuf[4] << 8);
 		if (ens160_dev._revENS16x > 0) ens160_data->_data_aqi500 = ((uint16_t)i2cbuf[5]) | ((uint16_t)i2cbuf[6] << 8);
 		else ens160_data->_data_aqi500 = 0;
-	}
+	//}
 	
 	return newData;
 }

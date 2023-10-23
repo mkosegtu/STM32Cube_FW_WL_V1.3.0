@@ -16,7 +16,7 @@ double a_int[6] = {4.,2.,1.,0.5,0.25,0.03125};
 volatile uint8_t gain = eGain1;
 volatile uint8_t resolution = 0;
 volatile uint8_t mode = 0;
-volatile uint8_t addr = 0xA6;
+volatile uint8_t addr = 0x53;
 
 static uint8_t ltr390uv_read_reg(uint8_t reg, uint8_t *pBuf, uint16_t size);
 
@@ -60,7 +60,7 @@ uint32_t ltr390uv_read_original_data(void)
   return data;
 }
 
-void ltr390uv_read_uvs_data(float* data)
+void ltr390uv_read_uvs_data(uint32_t* data)
 {
   uint32_t original_data = 0;
   uint8_t buffer[3];
@@ -68,7 +68,7 @@ void ltr390uv_read_uvs_data(float* data)
   ltr390uv_read_reg(LTR390UV_UVSDATA, buffer, 3);
 
   original_data = (buffer[2]<<16|buffer[1]<<8|buffer[0]) & 0xFFFFF;
-  data = original_data;
+  *data = original_data;
   return;
 }
 
@@ -87,7 +87,7 @@ void ltr390uv_read_als_transform_data(float* data)
 static uint8_t ltr390uv_read_reg(uint8_t reg, uint8_t *pBuf, uint16_t size)
 {
   uint8_t ret = 0;
-  ret = HAL_I2C_Mem_Read(&hi2c2, (uint16_t)addr, (uint16_t)reg,
+  ret = HAL_I2C_Mem_Read(&hi2c2, (uint16_t)addr << 1, (uint16_t)reg,
   		I2C_MEMADD_SIZE_8BIT, pBuf, size, 10000);
   return ret;
 }
@@ -95,13 +95,14 @@ static uint8_t ltr390uv_read_reg(uint8_t reg, uint8_t *pBuf, uint16_t size)
 static uint8_t ltr390uv_write_reg(uint8_t reg, uint8_t *pBuf, uint16_t size)
 {
   uint8_t ret = 0;
-  ret = HAL_I2C_Mem_Write(&hi2c2, (uint16_t)addr, (uint16_t)reg,
+  ret = HAL_I2C_Mem_Write(&hi2c2, (uint16_t)addr << 1, (uint16_t)reg,
   		I2C_MEMADD_SIZE_8BIT, pBuf, size, 10000);
   return ret;
 }
 
 int ltr390uv_init(void)
 {
+	ltr390uv_read_id();
 	ltr390uv_set_als_or_uvs_meas_rate(e18bit, e100ms);
 	ltr390uv_set_als_or_uvs_gain(eGain1);
 	ltr390uv_set_mode(eALSMode);//Set ambient light mode

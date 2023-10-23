@@ -153,6 +153,6 @@ int ltr390uv_init(void);
 
 int ltr390uv_read_id(void);
 
-void ltr390uv_read_uvs_data(float* data);
+void ltr390uv_read_uvs_data(uint32_t* data);
 
 #endif
