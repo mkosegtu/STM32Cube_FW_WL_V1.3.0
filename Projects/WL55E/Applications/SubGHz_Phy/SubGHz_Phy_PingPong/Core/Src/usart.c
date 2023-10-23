@@ -87,19 +87,6 @@ void MX_USART2_UART_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_SetRxFifoThreshold(&huart2, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_UARTEx_EnableFifoMode(&huart1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
@@ -191,33 +178,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-	/* USART1 DMA Init */
-	/* USART1_TX Init */
-	hdma_usart2_tx.Instance = DMA1_Channel6;
-	hdma_usart2_tx.Init.Request = DMA_REQUEST_USART2_TX;
-	hdma_usart2_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
-	hdma_usart2_tx.Init.PeriphInc = DMA_PINC_DISABLE;
-	hdma_usart2_tx.Init.MemInc = DMA_MINC_ENABLE;
-	hdma_usart2_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-	hdma_usart2_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-	hdma_usart2_tx.Init.Mode = DMA_NORMAL;
-	hdma_usart2_tx.Init.Priority = DMA_PRIORITY_LOW;
-	if (HAL_DMA_Init(&hdma_usart2_tx) != HAL_OK)
-	{
-	  Error_Handler();
-	}
-
-	// if (HAL_DMA_ConfigChannelAttributes(&hdma_usart1_tx, DMA_CHANNEL_NPRIV) != HAL_OK)
-	// {
-	  // Error_Handler();
-	// }
-
-	__HAL_LINKDMA(uartHandle,hdmatx,hdma_usart2_tx);
-
-	/* USART2 interrupt Init */
-	HAL_NVIC_SetPriority(USART2_IRQn, 2, 0);
-	HAL_NVIC_EnableIRQ(USART2_IRQn);
   }
 }
 

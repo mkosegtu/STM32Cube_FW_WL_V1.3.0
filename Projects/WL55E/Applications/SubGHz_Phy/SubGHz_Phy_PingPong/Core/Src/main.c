@@ -84,6 +84,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_I2C2_Init();
+  MX_USART2_UART_Init();
   MX_SubGHz_Phy_Init();
   /* USER CODE BEGIN 2 */
 
