@@ -121,7 +121,7 @@ int8_t bme280_get_data(struct bme280_data* comp_data)
 		dev.delay_us(period, dev.intf_ptr);
 
 		/* Read compensated data */
-		rslt = bme280_get_sensor_data(sensor_comp, &comp_data, &dev);
+		rslt = bme280_get_sensor_data(sensor_comp, comp_data, &dev);
 		//bme280_error_codes_print_result("bme280_get_sensor_data", rslt);
 
 #ifndef BME280_DOUBLE_ENABLE
