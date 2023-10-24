@@ -443,9 +443,10 @@ static void PingPong_Process(void)
     	  }
     	  if(index == 10)
     	  {
-    		  memcpy(&gGatewayPacket.nodePacket[index], &nodePacket,
+    		  memcpy(&gGatewayPacket.nodePacket[nonUsedIndex], &nodePacket,
 					 sizeof(struct sNodePacket));
     	  }
+    	  BSP_LED_Toggle(LED_RED) ;
     	  APP_LOG(TS_ON, VLEVEL_L, "Rx case for concentrator\n\r");
 	  }
       Radio.Rx(RX_TIMEOUT_VALUE);
