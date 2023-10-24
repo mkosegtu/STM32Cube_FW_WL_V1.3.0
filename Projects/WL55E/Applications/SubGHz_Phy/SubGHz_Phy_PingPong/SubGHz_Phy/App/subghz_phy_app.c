@@ -57,7 +57,7 @@ typedef enum
 /* USER CODE BEGIN PD */
 /* Configurations */
 /*Timeout*/
-#define RX_TIMEOUT_VALUE              0
+#define RX_TIMEOUT_VALUE              1000
 #define TX_TIMEOUT_VALUE              3000
 /* PING string*/
 #define PING "PING"
@@ -298,16 +298,16 @@ static void OnRxDone(uint8_t *payload, uint16_t size, int16_t rssi, int8_t LoraS
   /* Record Received Signal Strength*/
   RssiValue = rssi;
   /* Record payload content*/
-  APP_LOG(TS_ON, VLEVEL_H, "payload. size=%d \n\r", size);
-  for (int32_t i = 0; i < PAYLOAD_LEN; i++)
-  {
-    APP_LOG(TS_OFF, VLEVEL_H, "%02X", BufferRx[i]);
-    if (i % 16 == 15)
-    {
-      APP_LOG(TS_OFF, VLEVEL_H, "\n\r");
-    }
-  }
-  APP_LOG(TS_OFF, VLEVEL_H, "\n\r");
+//  APP_LOG(TS_ON, VLEVEL_H, "payload. size=%d \n\r", size);
+//  for (int32_t i = 0; i < PAYLOAD_LEN; i++)
+//  {
+//    APP_LOG(TS_OFF, VLEVEL_H, "%02X", BufferRx[i]);
+//    if (i % 16 == 15)
+//    {
+//      APP_LOG(TS_OFF, VLEVEL_H, "\n\r");
+//    }
+//  }
+//  APP_LOG(TS_OFF, VLEVEL_H, "\n\r");
   /* Run PingPong process in background*/
   UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_SubGHz_Phy_App_Process), CFG_SEQ_Prio_0);
   /* USER CODE END OnRxDone */
