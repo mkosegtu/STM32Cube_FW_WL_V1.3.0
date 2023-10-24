@@ -74,7 +74,7 @@ typedef enum
 /* Afc bandwidth in Hz */
 #define FSK_AFC_BANDWIDTH             83333
 /* LED blink Period*/
-#define LED_PERIOD_MS                 5000
+#define SENSOR_PERIOD_MS              600000
 
 /* USER CODE END PD */
 
@@ -101,13 +101,15 @@ int8_t RssiValue = 0;
 /* Last  Received packer SNR (in Lora modulation)*/
 int8_t SnrValue = 0;
 /* Led Timers objects*/
-static UTIL_TIMER_Object_t timerLed;
+static UTIL_TIMER_Object_t timerSensor;
 /* device state. Master: true, Slave: false*/
 bool isMaster = true;
 /* random delay to make sure 2 devices will sync*/
 /* the closest the random delays are, the longer it will
    take for the devices to sync when started simultaneously*/
 static int32_t random_delay;
+
+int gSensorEventCounter = 0;
 
 struct sGatewayPacket gGatewayPacket;
 
@@ -148,7 +150,7 @@ static void OnRxError(void);
   * @brief  Function executed on when led timer elapses
   * @param  context ptr of LED context
   */
-static void OnledEvent(void *context);
+static void OnSensorEvent(void *context);
 
 /**
   * @brief PingPong state machine implementation
@@ -183,8 +185,8 @@ void SubghzApp_Init(void)
           (uint8_t)(SUBGHZ_PHY_VERSION_SUB2));
 
   /* Led Timers*/
-  UTIL_TIMER_Create(&timerLed, LED_PERIOD_MS, UTIL_TIMER_ONESHOT, OnledEvent, NULL);
-  UTIL_TIMER_Start(&timerLed);
+  UTIL_TIMER_Create(&timerSensor, SENSOR_PERIOD_MS, UTIL_TIMER_ONESHOT, OnSensorEvent, NULL);
+  UTIL_TIMER_Start(&timerSensor);
   /* USER CODE END SubghzApp_Init_1 */
 
   /* Radio initialization */
@@ -497,7 +499,7 @@ static void PingPong_Process(void)
   }
 }
 
-static void OnledEvent(void *context)
+static void OnSensorEvent(void *context)
 {
   struct bme280_data comp_data;
   struct ens160_data_str ens160_data;
@@ -524,7 +526,18 @@ static void OnledEvent(void *context)
 
   Uart_Send((uint8_t *)&gGatewayPacket, sizeof(struct sGatewayPacket));
 
-  UTIL_TIMER_Start(&timerLed);
+  if(gSensorEventCounter < 5)
+  {
+	  gSensorEventCounter++;
+	  UTIL_TIMER_SetPeriod(&timerSensor, 10000);
+
+  }
+  else
+  {
+	  gSensorEventCounter = 0;
+	  UTIL_TIMER_SetPeriod(&timerSensor, SENSOR_PERIOD_MS);
+  }
+  UTIL_TIMER_Start(&timerSensor);
 }
 
 /* USER CODE END PrFD */
