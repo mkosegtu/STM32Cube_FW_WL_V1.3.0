@@ -165,7 +165,7 @@ void SubghzApp_Init(void)
   /* USER CODE BEGIN SubghzApp_Init_1 */
 
   BSP_LED_Init(LED_RED);
-  BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
+  //BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
   memset(&gGatewayPacket, 0x0, sizeof(struct sGatewaySensors));
   bme280_init_sensor();
   ens160_init();

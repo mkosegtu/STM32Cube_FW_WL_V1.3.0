@@ -78,16 +78,16 @@ static uint32_t ADC_ReadChannels(uint32_t channel);
 
 /* USER CODE END EF */
 
-int16_t GetTemperatureSensorLevel(void)
+int16_t GetEcLevel(void)
 {
-  int32_t temperatureRawValue = 0;
-  int32_t temperatureValue = 0;
+  int32_t ecRawValue = 0;
+  int32_t ecValue = 0;
 
-  temperatureRawValue = ADC_ReadChannels(ADC_CHANNEL_3);
+  ecRawValue = ADC_ReadChannels(ADC_CHANNEL_3);
 
-  temperatureValue = (temperatureRawValue * 4096) / 5000;
+  ecValue = (ecRawValue * 4096) / 5000;
 
-  return temperatureValue;
+  return ecValue;
 }
 
 uint8_t GetHumidtyLevel(void)

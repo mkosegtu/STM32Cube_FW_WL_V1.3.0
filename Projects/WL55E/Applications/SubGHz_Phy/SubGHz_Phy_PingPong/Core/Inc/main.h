@@ -84,6 +84,9 @@ void Error_Handler(void);
 
 #define USART2_TX_Pin GPIO_PIN_2
 #define USART2_TX_GPIO_Port GPIOA
+
+#define SENSOR_POWER_CONTROL_Pin GPIO_PIN_0
+#define SENSOR_POWER_CONTROL_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -83,6 +83,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
   MX_I2C2_Init();
   MX_USART2_UART_Init();
   MX_SubGHz_Phy_Init();
