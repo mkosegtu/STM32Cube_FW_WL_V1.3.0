@@ -30,9 +30,10 @@
 #include "utilities_def.h"
 #include "app_version.h"
 #include "subghz_phy_version.h"
-#include "bme280.h"
+#include "bmp3.h"
 #include "ltr390uv.h"
 #include "ens160.h"
+#include "ens210.h"
 /* USER CODE END Includes */
 
 /* External variables ---------------------------------------------------------*/
@@ -74,7 +75,7 @@ typedef enum
 /* Afc bandwidth in Hz */
 #define FSK_AFC_BANDWIDTH             83333
 /* LED blink Period*/
-#define SENSOR_PERIOD_MS              600000
+#define SENSOR_PERIOD_MS              6000
 
 /* USER CODE END PD */
 
@@ -167,8 +168,9 @@ void SubghzApp_Init(void)
   BSP_LED_Init(LED_RED);
   //BSP_PB_Init(BUTTON_SW1, BUTTON_MODE_EXTI);
   memset(&gGatewayPacket, 0x0, sizeof(struct sGatewaySensors));
-  bme280_init_sensor();
+  bmp3_sensor_init();
   ens160_init();
+  ENS21x_readIdentifiers();
   ltr390uv_init();
 
   APP_LOG(TS_OFF, VLEVEL_M, "\n\rPING PONG\n\r");
@@ -501,17 +503,23 @@ static void PingPong_Process(void)
 
 static void OnSensorEvent(void *context)
 {
-  struct bme280_data comp_data;
+  struct bmp3_data comp_data;
   struct ens160_data_str ens160_data;
   float ltr390uv_als_data;
   uint32_t ltr390uv_uvs_data;
   //BSP_LED_Toggle(LED_RED) ;
 
-  bme280_get_data(&comp_data);
+  bmp3_get_data(&comp_data);
   memcpy(&gGatewayPacket.gatewaySensors.u8Temp, &comp_data.temperature, 8);
-  memcpy(&gGatewayPacket.gatewaySensors.u8Humidity, &comp_data.humidity, 8);
   memcpy(&gGatewayPacket.gatewaySensors.u8Pressure, &comp_data.pressure, 8);
 
+  if (ENS21x_singleShotMeasure(TEMPERATURE_AND_HUMIDITY) == STATUS_OK)
+  {
+	  gGatewayPacket.gatewaySensors.u4Temp = ENS21x_getTempCelsius();
+	  gGatewayPacket.gatewaySensors.u4Humidity = ENS21x_getHumidityPercent();
+	  ens160_set_envdata210(ENS21x_getDataT(), ENS21x_getDataH());
+	  HAL_Delay(2000);
+  }
   ens160_measure(&ens160_data);
   gGatewayPacket.gatewaySensors.u2Tvoc = ens160_data._data_tvoc;
   gGatewayPacket.gatewaySensors.u2Co2 = ens160_data._data_eco2;

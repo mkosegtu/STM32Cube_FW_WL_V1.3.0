@@ -13,7 +13,7 @@
 #include "math.h"
 #include "i2c.h"
 
-uint8_t slaveaddr = ENS160_I2CADDR_1;
+uint8_t slaveaddr = ENS160_I2CADDR_0;
 
 struct ens160 ens160_dev;
 
@@ -29,7 +29,7 @@ uint8_t ens160_read(uint8_t addr, uint8_t reg, uint8_t *buf, uint8_t num) {
 //		Serial.print(" - register: 0x");
 //		Serial.println(reg, HEX);
 //	}
-	result = HAL_I2C_Mem_Read(&hi2c2, ENS160_I2CADDR_1 << 1, (uint16_t)reg,
+	result = HAL_I2C_Mem_Read(&hi2c2, addr << 1, (uint16_t)reg,
 	      		I2C_MEMADD_SIZE_8BIT, buf, (uint16_t)num, 10000);
 
 	return result;
@@ -58,7 +58,7 @@ uint8_t ens160_write(uint8_t addr, uint8_t reg, uint8_t *buf, uint8_t num) {
 //	}
 //
 
-	uint8_t result = HAL_I2C_Mem_Write(&hi2c2, ENS160_I2CADDR_1 << 1, (uint16_t)reg,
+	uint8_t result = HAL_I2C_Mem_Write(&hi2c2, addr << 1, (uint16_t)reg,
 	      		I2C_MEMADD_SIZE_8BIT, buf, (uint16_t)num, 10000);
 	return result;
 }
@@ -262,7 +262,7 @@ int ens160_measure(struct ens160_data_str* ens160_data) {
 	}
 	
 	// Read predictions
-	//if (IS_NEWDAT(status)) {
+	if (IS_NEWDAT(status)) {
 		newData = 1;
 		ens160_read(slaveaddr, ENS160_REG_DATA_AQI, i2cbuf, 7);
 		ens160_data->_data_aqi = i2cbuf[0];
@@ -270,7 +270,7 @@ int ens160_measure(struct ens160_data_str* ens160_data) {
 		ens160_data->_data_eco2 = i2cbuf[3] | ((uint16_t)i2cbuf[4] << 8);
 		if (ens160_dev._revENS16x > 0) ens160_data->_data_aqi500 = ((uint16_t)i2cbuf[5]) | ((uint16_t)i2cbuf[6] << 8);
 		else ens160_data->_data_aqi500 = 0;
-	//}
+	}
 	
 	return newData;
 }

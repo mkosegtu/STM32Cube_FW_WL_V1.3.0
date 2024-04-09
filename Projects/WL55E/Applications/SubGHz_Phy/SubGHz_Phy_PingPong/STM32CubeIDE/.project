@@ -353,6 +353,21 @@
 			<locationURI>PARENT-1-PROJECT_LOC/Sensor/Src/ens160.c</locationURI>
 		</link>
 		<link>
+			<name>Application/User/Sensor/ens210.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Sensor/Src/ens210.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Sensor/bmp3.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Sensor/Src/bmp3.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Sensor/bmp3_if.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Sensor/Src/bmp3_if.c</locationURI>
+		</link>
+		<link>
 			<name>Application/User/Core/usart2_if.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/usart2_if.c</locationURI>

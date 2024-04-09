@@ -86,11 +86,12 @@ struct sNodePacket{
 struct sGatewaySensors
 {
 	uint64_t u8Temp;
-	uint64_t u8Humidity;
 	uint64_t u8Pressure;
 	uint16_t u2Tvoc;
 	uint16_t u2Co2;
 	uint32_t u4Co;
+	uint32_t u4Temp;
+	uint32_t u4Humidity;
 	uint32_t u4Uvs;
 	uint32_t u4Als;
 	uint16_t u2aqi;
